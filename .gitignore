@@ -1,0 +1,9 @@
+# binaries
+x86
+x64
+**/vc_x64_mswud
+
+# unnecessary
+lab1
+lab2
+lab3
