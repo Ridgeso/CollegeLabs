@@ -1,9 +1,18 @@
+# vs
+.vs
+
 # binaries
+out
 x86
 x64
-**/vc_x64_mswud
+**/vc_x64_mswud/**
+**/vc_x64_lib/**
 
 # unnecessary
 lab1
 lab2
 lab3
+
+# lab4
+lab4/*.exe
+lab4/*.cfg
