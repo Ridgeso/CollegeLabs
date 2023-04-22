@@ -93,10 +93,6 @@ void GUIMyFrame1::Scrolls_Updated( wxScrollEvent& event )
     Repaint();
 }
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
 void GUIMyFrame1::Repaint()
 {
     wxRect screen = WxPanel->GetRect();
@@ -110,18 +106,18 @@ void GUIMyFrame1::Repaint()
 
     double l = -1.0, r = 1.0;
     double b = -1.0, t = 1.0;
-    double near = 1.0, far = 3.0;
+    double nearPlane = 1.0, farPlane = 3.0;
 
     Matrix4 MProjection;
-    MProjection.data[0][0] = near / r;
-    MProjection.data[1][1] = near / t;
-    MProjection.data[2][2] = -(far + near) / (far - near);
+    MProjection.data[0][0] = nearPlane / r;
+    MProjection.data[1][1] = nearPlane / t;
+    MProjection.data[2][2] = -(farPlane + nearPlane) / (farPlane - nearPlane);
     MProjection.data[3][3] = 0.0;
 
     MProjection.data[0][2] = (r + l) / (r - l);
     MProjection.data[1][2] = (t + b) / (t - b);
 
-    MProjection.data[2][3] = -2.0 * far * near / (far - near);
+    MProjection.data[2][3] = -2.0 * farPlane * nearPlane / (farPlane - nearPlane);
     MProjection.data[3][2] = -1.0;
 
     Matrix4 MTranslation;
