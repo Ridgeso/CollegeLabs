@@ -4,8 +4,10 @@
 # binaries
 x86
 x64
+**/vc_x64_mswu/**
 **/vc_x64_mswud/**
 **/vc_x64_lib/**
+wxWidgets
 
 # unnecessary
 lab1
@@ -18,3 +20,6 @@ lab4/*.cfg
 
 # lab6
 lab6/*.exe
+
+# lab7
+lab7/*.exe
