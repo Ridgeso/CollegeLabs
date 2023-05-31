@@ -12,4 +12,5 @@ endif()
 project ("labCpp")
 
 # Include sub-projects.
-add_subdirectory ("proj1")
+add_subdirectory("proj1")
+add_subdirectory("egz")
