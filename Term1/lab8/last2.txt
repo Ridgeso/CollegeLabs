@@ -1,0 +1,192 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+/* Dyrektywy zakladajace, ze te trzy pliki sa skopiowane do aktualnego katalogu. */
+// #include "nrutil.h"
+//#include "nrutil.c" // To mozna usunac, jesli plik jest dodany w poleceniu kompilacji.
+//#include "gaussj.c" // To tez mozna usunac, jesli plik jest dodany w poleceniu kompilacji.
+
+/* Dyrektywy dla Taurusa (nie wymagaja kopiowania plikow, ale Taurus musi dzialac...) */
+#include "/home/NR/numerical_recipes.c/nrutil.h"
+#include "/home/NR/numerical_recipes.c/nrutil.c"
+#include "/home/NR/numerical_recipes.c/ludcmp.c"
+#include "/home/NR/numerical_recipes.c/lubksb.c"
+
+#define N 3 // rozmiar macierzy M: NxN
+
+int main(void)
+{
+	float **A, **B;
+	float **AC, **BC;
+	int* indx;
+	float d;
+	float* b1, * b2, * b3;
+
+	//	Alokacja macierzy
+	A = matrix(1, N, 1, N);
+	B = matrix(1, N, 1, N);
+	AC = matrix(1, N, 1, N);
+	BC = matrix(1, N, 1, N);
+
+	indx = ivector(1, N);
+	
+	b1 = vector(1, N);
+	b2 = vector(1, N);
+	b3 = vector(1, N);
+
+	// 	Wypelnienie macierzy A i B oraz wektorow wyrazow wolnych
+	
+	A[1][1] = 1; A[1][2] = 2; A[1][3] = 3;
+	A[2][1] = 4; A[2][2] = 5; A[2][3] = 6;
+	A[3][1] = 7; A[3][2] = 8; A[3][3] = 9;
+
+	B[1][1] = 1.1; B[1][2] = 2; B[1][3] = 3;
+	B[2][1] = 4; B[2][2] = 5; B[2][3] = 6;
+	B[3][1] = 7; B[3][2] = 8; B[3][3] = 9;
+
+	AC[1][1] = 1; AC[1][2] = 2; AC[1][3] = 3;
+	AC[2][1] = 4; AC[2][2] = 5; AC[2][3] = 6;
+	AC[3][1] = 7; AC[3][2] = 8; AC[3][3] = 9;
+	BC[1][1] = 1.1; BC[1][2] = 2; BC[1][3] = 3;
+	BC[2][1] = 4; BC[2][2] = 5; BC[2][3] = 6;
+	BC[3][1] = 7; BC[3][2] = 8; BC[3][3] = 9;
+
+	b1[1] = 1; b2[1] = 0; b3[1] = 0;
+	b1[2] = 0; b2[2] = 1; b3[2] = 0;
+	b1[3] = 0; b2[3] = 0; b3[3] = 1;
+
+	printf("---------------------A---------------------\n");
+	float normA = 0;
+	for (int i = 1; i <= N; ++i){
+		for (int j = 1; j <= N; ++j){
+			printf( "%10g\t", A[i][j] );
+
+			if (fabs(A[i][j]) > normA)
+				normA = fabs(A[i][j]);
+		}
+		printf( "\n");
+	}
+
+	printf("-----------------LU->A---------------------\n");
+
+	ludcmp(A, N, indx, &d);
+	
+	for (int i = 1; i <= N; ++i){
+		for (int j = 1; j <= N; ++j){
+			printf( "%10g\t", A[i][j] );
+		}
+		printf("\n");
+	}
+
+	printf("-----------------det(A)--------------------\n");
+	printf("det(A)=A[1][1]*A[2][2]*A[3][3]=%g\n", A[1][1]*A[2][2]*A[3][3]);
+
+	printf("-------------------A^-1--------------------\n");
+	
+	lubksb(A, N, indx, b1);
+	lubksb(A, N, indx, b2);
+	lubksb(A, N, indx, b3);
+	
+	float normAinv = 0;
+	
+	for (int i = 1; i <= N; ++i){
+		printf( "%10g\t%10g\t%10g\n", b1[i], b2[i], b3[i]);
+
+		if (fabs(b1[i]) > normAinv)
+			normAinv = fabs(b1[i]);
+		if (fabs(b2[i]) > normAinv)
+			normAinv = fabs(b2[i]);
+		if (fabs(b3[i]) > normAinv)
+			normAinv = fabs(b3[i]);
+	}
+
+	printf("------------------A.A^-1-------------------\n");
+	for (int i = 1; i <= N; ++i){
+		for (int j = 1; j <= N; ++j){
+			float val = b1[i] * AC[1][j] + b2[i] * AC[2][j] + b3[i] * AC[3][j];
+			printf( "%10g\t", val );
+		}
+		printf( "\n");
+	}
+
+
+	printf("Norma macierzy ||A|| = %g\n", normA);
+	printf("Norma macierzy ||A^-1|| = %g\n", normAinv);
+	printf("Iloczyn ||A||.||A^-1||= %g\n", normA * normAinv);
+
+	////////////////////////////////////////////////////
+	// inicjalizuje wektory wyrazow wolnych na nowo dla macierzy B
+	b1[1] = 1; b2[1] = 0; b3[1] = 0;
+	b1[2] = 0; b2[2] = 1; b3[2] = 0;
+	b1[3] = 0; b2[3] = 0; b3[3] = 1;
+	
+	printf("---------------------B---------------------\n");
+	float normB = 0;
+	for (int i = 1; i <= N; ++i){
+		for (int j = 1; j <= N; ++j){
+			printf( "%10g\t", B[i][j] );
+
+			if (fabs(B[i][j]) > normB)
+				normB = fabs(B[i][j]);
+		}
+		printf( "\n");
+	}
+
+	
+	printf("-----------------LU->B---------------------\n");
+	ludcmp(B, N, indx, &d);
+	
+	for (int i = 1; i <= N; ++i){
+		for (int j = 1; j <= N; ++j){
+			printf( "%10g\t", B[i][j] );
+		}
+		printf( "\n");
+	}
+
+	printf("-----------------det(B)--------------------\n");
+	printf("det(B)=B[1][1]*B[2][2]*B[3][3]=%g\n", B[1][1]*B[2][2]*B[3][3]);
+
+	printf("-------------------B^-1--------------------\n");
+	
+	lubksb(B, N, indx, b1);
+	lubksb(B, N, indx, b2);
+	lubksb(B, N, indx, b3);
+	
+	float normBinv = 0;
+	for (int i = 1; i <= N; ++i){
+		printf( "%10g\t%10g\t%10g\n", b1[i], b2[i], b3[i]);
+
+		if (fabs(b1[i]) > normBinv)
+			normBinv = fabs(b1[i]);
+		if (fabs(b2[i]) > normBinv)
+			normBinv = fabs(b2[i]);
+		if (fabs(b3[i]) > normBinv)
+			normBinv = fabs(b3[i]);
+	}
+
+	printf("------------------B.B^-1-------------------\n");
+	for (int i = 1; i <= N; ++i){
+		for (int j = 1; j <= N; ++j){
+			float val = b1[i] * BC[1][j] + b2[i] * BC[2][j] + b3[i] * BC[3][j];
+			printf( "%10g\t", val );
+		}
+		printf( "\n");
+	}
+
+	printf("Norma macierzy ||B|| = %g\n", normB);
+	printf("Norma macierzy ||B^-1|| = %g\n", normBinv);
+	printf("Iloczyn ||B||.||B^-1||= %g\n", normB * normBinv);
+
+	//	Zwolnienie pamieci
+	free_matrix(A, 1, N, 1, N);
+	free_matrix(B, 1, N, 1, N);
+	free_matrix(AC, 1, N, 1, N);
+	free_matrix(BC, 1, N, 1, N);
+	free_ivector(indx, 1, N);
+	free_vector(b1, 1, N);
+	free_vector(b2, 1, N);
+	free_vector(b3, 1, N);
+
+	return 0;
+}
