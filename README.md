@@ -9,5 +9,5 @@
 > Computing Methods
 > #### 3. Branch numer
 ---
-> Computing Methods
+> Scala
 > #### 4. Branch Scala
