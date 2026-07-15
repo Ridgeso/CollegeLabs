@@ -8,3 +8,6 @@
 ---
 > Computing Methods
 > #### 3. Branch numer
+---
+> Computing Methods
+> #### 4. Branch Scala
